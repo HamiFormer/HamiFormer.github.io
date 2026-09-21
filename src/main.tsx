@@ -46,7 +46,7 @@ function Hero() {
       <a className="text-action" href="#resources">Data & weights <span aria-hidden="true">↗</span></a>
     </div><p className="authors">Anonymous authors <span>·</span> Under review</p></div>
     <MotionWindow />
-    </div><div className="hero-baseline"><p>SMOOTH DYNAMICS <span>×</span> INELASTIC COLLISIONS <span>×</span> LONG HORIZONS</p><a href="#predictions">Explore the predictions <span aria-hidden="true">↓</span></a></div>
+    </div><div className="hero-baseline"><p>SMOOTH DYNAMICS <span>×</span> INELASTIC COLLISIONS <span>×</span> LONG HORIZONS</p><a href="#predictions">Explore <span aria-hidden="true">↓</span></a></div>
   </section>;
 }
 

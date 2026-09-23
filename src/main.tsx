@@ -10,6 +10,7 @@ import '@fontsource/space-grotesk/latin-600.css';
 import '@fontsource/ibm-plex-mono/latin-400.css';
 import './styles.css';
 import './dynamics-gallery.css';
+import './theme.css';
 import { MotionWindow } from './MotionWindow';
 import { DynamicsGallery } from './DynamicsGallery';
 import { resources, results } from './data';
@@ -30,7 +31,7 @@ function Icon({ kind = 'arrow' }: { kind?: 'arrow' | 'paper' | 'code' | 'expand'
 function Header() {
   return <header className="site-header"><div className="header-inner">
     <a className="wordmark" href="#top" aria-label="HamiFormer, back to top"><span className="brand-symbol" aria-hidden="true">H<span>↗</span></span>HamiFormer</a>
-    <nav aria-label="Main navigation"><a href="#predictions">Predictions</a><a href="#method">Method</a><a href="#results">Results</a><a className="nav-paper" aria-disabled="true" title="TODO" role="link" tabIndex={0}>Read paper <Icon /></a></nav>
+    <nav aria-label="Main navigation"><a href="#predictions">Visualizations</a><a href="#method">Method</a><a href="#results">Results</a><a className="nav-paper" aria-disabled="true" title="TODO" role="link" tabIndex={0}>Read paper <Icon /></a></nav>
   </div></header>;
 }
 
@@ -85,14 +86,14 @@ function SectionHeading({ number, label, children }: { number: string; label: st
 
 function PredictionsSection() {
   return <section id="predictions" className="section predictions-section">
-    <div className="section-top"><SectionHeading number="01" label="HAMIBALLS">Motion, under a closer lens.</SectionHeading><p className="section-aside">Explore trajectories in two and three dimensions.</p></div>
+    <div className="section-top"><SectionHeading number="01" label="HAMIBALLS">Visualizations</SectionHeading><p className="section-aside">Explore trajectories in two and three dimensions.</p></div>
     <DynamicsGallery />
     <div className="qualitative-comparisons">
       <div className="qualitative-heading"><h3>Several prediction snapshots</h3><p>Two sequences per system, three recorded states per sequence.</p></div>
       <h4>HamiBalls-1 <span>2D dynamics</span></h4>
       <FigureViewer src="./assets/hami1-qualitative-aligned.webp" title="HamiBalls-1 prediction snapshots" alt="Six columns and three rows comparing GT, PhysiFormer and Ours. Left sequence: edges 32, 128, 176. Right sequence: edges 16, 96, 192. Dashed outlines mark ground truth; filled spheres mark predictions." caption="In the prediction rows, dashed outlines show ground truth and filled spheres show predictions; trails cover the preceding 32 edges." />
       <h4>HamiBalls-2 <span>3D dynamics</span></h4>
-      <FigureViewer src="./assets/hami2-qualitative-aligned.webp" title="HamiBalls-2 trajectory comparison" alt="Two trajectories at three recorded steps, comparing ground truth, PhysiFormer and HamiFormer. Red circles identify significant object-wise prediction errors." caption="Red circles highlight prediction errors." />
+      <FigureViewer src="./assets/hami2-qualitative-aligned.webp" title="HamiBalls-2 trajectory comparison" alt="Two trajectories at three recorded steps, comparing ground truth, PhysiFormer and HamiFormer. Red circles highlight visible errors in predicted object positions." caption="Red circles highlight prediction errors." />
     </div>
   </section>;
 }
@@ -118,7 +119,7 @@ function ResultsSection() {
   const [metric, setMetric] = useState<Metric>('z');
   const rows = results[dataset];
   return <section id="results" className="section results-section">
-    <div className="section-top"><SectionHeading number="03" label="THE EVIDENCE">Better predictions, further ahead.</SectionHeading><a className="inline-link" aria-disabled="true" title="TODO" role="link" tabIndex={0}>Full evaluation <Icon /></a></div>
+    <div className="section-top"><SectionHeading number="03" label="THE EVIDENCE">Lower error over long horizons.</SectionHeading><a className="inline-link" aria-disabled="true" title="TODO" role="link" tabIndex={0}>Full evaluation <Icon /></a></div>
     <p className="results-intro">Over 192 physical steps, HamiFormer lowers normalized phase-space MSE by <strong>26.3% on HamiBalls-1</strong> and <strong>24.1% on HamiBalls-2</strong> relative to capacity-comparable PhysiFormer baselines.</p>
     <div className="results-panel">
       <div className="results-toolbar"><div className="dataset-switch" role="group" aria-label="Dataset">{(['HamiBalls-1', 'HamiBalls-2'] as Dataset[]).map(name => <button key={name} aria-pressed={dataset === name} onClick={() => setDataset(name)}>{name}</button>)}</div><label className="metric-select">Metric<select value={metric} onChange={e => setMetric(e.target.value as Metric)}><option value="z">Phase space (z)</option><option value="q">Position (q)</option><option value="p">Momentum (p)</option></select></label></div>
@@ -127,7 +128,7 @@ function ResultsSection() {
       <details className="data-details"><summary>View exact values <span aria-hidden="true">+</span></summary><div className="table-scroll"><table><caption>{dataset} · Pooled 192-edge normalized MSE (lower is better)</caption><thead><tr><th scope="col">Method</th><th scope="col">Phase space (z)</th><th scope="col">Position (q)</th><th scope="col">Momentum (p)</th></tr></thead><tbody>{rows.map(row => <tr key={row.method} className={row.ours ? 'ours' : ''}><th scope="row">{row.method}</th><td>{row.z.toFixed(5)}</td><td>{row.q.toFixed(5)}</td><td>{row.p.toFixed(5)}</td></tr>)}</tbody></table></div></details>
       <p className="protocol">Table 1 of the paper. 512 physical sources per dataset, two sampling-noise realizations for diffusion models. Ground truth is supplied only at initialization.</p>
     </div>
-    <div className="solver-row"><div><p className="eyebrow">NUMERICAL REFINEMENT</p><h3>Structure, with an efficient solver.</h3><p>On HamiBalls-1, PLAS combines 49.4× lower solver RMSE than Explicit Euler with 37.7% less sampling time than SymEuler2. The comparison pairs numerical accuracy with runtime under the same evaluation protocol.</p><a className="inline-link" aria-disabled="true" title="TODO" role="link" tabIndex={0}>Solver experiments <Icon /></a></div><div className="solver-comparison"><table aria-label="HamiBalls-1 solver accuracy and sampling time"><thead><tr><th scope="col">Solver</th><th scope="col">Time (s) ↓</th><th scope="col">Solver RMSE ↓</th></tr></thead><tbody><tr><th scope="row">Explicit Euler</th><td>0.8875</td><td>4.846 × 10<sup>−4</sup></td></tr><tr><th scope="row">SymEuler2<small>2-iteration symplectic Euler</small></th><td>1.2752</td><td><strong>5.319 × 10<sup>−8</sup></strong></td></tr><tr className="solver-plas"><th scope="row">PLAS</th><td><strong>0.7940</strong></td><td>9.801 × 10<sup>−6</sup></td></tr></tbody></table><p>RMSE: phase-space agreement with an FP64 Newton reference, over 512 sources and two noises. Time: median of 11 warmed, synchronized B64 × 48 runs.</p></div></div>
+    <div className="solver-row"><div><p className="eyebrow">NUMERICAL REFINEMENT</p><h3>PLAS accuracy and runtime</h3><p>On HamiBalls-1, PLAS combines 49.4× lower solver RMSE than Explicit Euler with 37.7% less sampling time than SymEuler2. The comparison pairs numerical accuracy with runtime under the same evaluation protocol.</p><a className="inline-link" aria-disabled="true" title="TODO" role="link" tabIndex={0}>Solver experiments <Icon /></a></div><div className="solver-comparison"><table aria-label="HamiBalls-1 solver accuracy and sampling time"><thead><tr><th scope="col">Solver</th><th scope="col">Time (s) ↓</th><th scope="col">Solver RMSE ↓</th></tr></thead><tbody><tr><th scope="row">Explicit Euler</th><td>0.8875</td><td>4.846 × 10<sup>−4</sup></td></tr><tr><th scope="row">SymEuler2<small>2-iteration symplectic Euler</small></th><td>1.2752</td><td><strong>5.319 × 10<sup>−8</sup></strong></td></tr><tr className="solver-plas"><th scope="row">PLAS</th><td><strong>0.7940</strong></td><td>9.801 × 10<sup>−6</sup></td></tr></tbody></table><p>RMSE: phase-space agreement with an FP64 Newton reference, over 512 sources and two noises. Time: median of 11 warmed, synchronized B64 × 48 runs.</p></div></div>
   </section>;
 }
 

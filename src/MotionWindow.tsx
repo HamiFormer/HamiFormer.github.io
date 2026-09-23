@@ -19,8 +19,8 @@ const fiberSegments = (i: number, view: View, until: number) => Array.from({ len
       const [x, y] = projectBody(s.t, s.bodies[i], view);
       return `${k === 0 || (view === 'phase' && s.jump) ? 'M' : 'L'}${x.toFixed(2)},${y.toFixed(2)}`;
     }).join(' '),
-    width: .95 + .25 * wave,
-    opacity: .77 + .12 * wave,
+    width: 1.18 + .22 * wave,
+    opacity: .86 + .1 * wave,
   };
 });
 const lanes = [-3, -2, -1, 1, 2, 3];
@@ -55,16 +55,12 @@ export function MotionWindow() {
   const root = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState(Math.round(firstContact.t / duration * 192));
   const [view, setView] = useState<View>('xy');
-  const [playing, setPlaying] = useState(false);
+  const [playing, setPlaying] = useState(true);
   const [visible, setVisible] = useState(true);
   useEffect(() => {
-    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPlaying(!media.matches);
-    const changed = () => { if (media.matches) setPlaying(false); };
-    media.addEventListener('change', changed);
     const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting));
     if (root.current) observer.observe(root.current);
-    return () => { media.removeEventListener('change', changed); observer.disconnect(); };
+    return () => observer.disconnect();
   }, []);
   useEffect(() => {
     if (!playing || !visible) return;
